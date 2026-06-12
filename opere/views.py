@@ -5,13 +5,13 @@ from .models import Mostra, Opera
 
 def opere_base_view(request):
     """List all published sculptures."""
-    opere = Opera.objects.filter(typology='S', published=True)
-    return render(request, 'opere/opere_base.html', {'opere': opere, 'typology': 'Sculture'})
+    opere = Opera.objects.filter(typology='S', published=True).order_by('title')
+    return render(request, 'opere/opere_base.html', {'opere': opere, 'typology': 'Opere'})
 
 
 def gioielli_base_view(request):
     """List all published jewelry."""
-    opere = Opera.objects.filter(typology='G', published=True)
+    opere = Opera.objects.filter(typology='G', published=True).order_by('title')
     return render(request, 'opere/opere_base.html', {'opere': opere, 'typology': 'Gioielli'})
 
 
@@ -37,3 +37,22 @@ def mostre_list_view(request):
     """List all published exhibitions."""
     mostre = Mostra.objects.filter(published=True)
     return render(request, 'opere/mostre_list.html', {'mostre': mostre})
+
+
+def biografia_view(request):
+    """Biography page with exhibitions grouped by type and year."""
+    mostre_personali = Mostra.objects.filter(
+        published=True, type='1'
+    ).order_by('-beginning')
+    mostre_collettive = Mostra.objects.filter(
+        published=True, type='2'
+    ).order_by('-beginning')
+    return render(request, 'biografia.html', {
+        'mostre_personali': mostre_personali,
+        'mostre_collettive': mostre_collettive,
+    })
+
+
+def contatti_view(request):
+    """Contact page with a simple form."""
+    return render(request, 'contatti.html')

@@ -4,36 +4,24 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Luisa Valentini{% endblock %}</title>
+    <title>{% block title %}Homepage{% endblock %} | Luisa Valentini</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
     <div id="container">
-        <header>
-            <h1><a href="{% url 'home' %}">Luisa Valentini</a></h1>
-            <nav>
-                <ul id="menu">
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="{% url 'opere:sculture' %}">Sculture</a></li>
-                    <li><a href="{% url 'opere:gioielli' %}">Gioielli</a></li>
-                    <li><a href="{% url 'opere:disegni' %}">Disegni</a></li>
-                    <li><a href="{% url 'opere:mostre' %}">Mostre</a></li>
-                    <li><a href="{% url 'biografia' %}">Biografia</a></li>
-                    <li><a href="{% url 'contatti' %}">Contatti</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <main id="content">
+        <h1 id="header">Luisa Valentini - {% block page_title %}Homepage{% endblock %}</h1>
+        <ul id="menu">
+            <li><a href="{% url 'home' %}">Homepage</a></li>
+            <li><a href="{% url 'biografia' %}">Biografia</a></li>
+            <li><a href="{% url 'opere:sculture' %}">Opere</a></li>
+            <li><a href="{% url 'opere:gioielli' %}">Gioielli</a></li>
+            <li><a href="{% url 'contatti' %}">Contatti</a></li>
+        </ul>
+        <div id="main">
             {% block content %}{% endblock %}
-        </main>
-
-        <footer>
-            {% block footer %}
-            <p>&copy; Luisa Valentini</p>
-            {% endblock %}
-        </footer>
+        </div>
+        <div id="footer"></div>
     </div>
 </body>
 </html>

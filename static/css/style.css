@@ -1,30 +1,27 @@
 /*
  * Luisa Valentini - Portfolio
- * Ported from legacy CSS, modernized for current browsers.
+ * Ported from legacy CSS.
  */
 
 body {
     background-color: #fff;
     margin: 0;
     padding: 0;
-    font-family: Helvetica, sans-serif, Arial;
-    font-size: 14px;
-    line-height: 1.4;
 }
 
 h1 { color: #9C0000; }
 h2, h3 { text-transform: capitalize; color: #990000; }
 
 #container {
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
     width: 760px;
 }
 
-/* Header */
-header {
+#header {
     color: #990000;
     text-align: right;
-    border-bottom: 1px solid #990000;
+    background: url(/static/img/filetto.jpg) repeat-x bottom left;
     font-family: Helvetica, sans-serif, Arial;
     font-size: 22px;
     height: 25px;
@@ -32,35 +29,30 @@ header {
     font-variant: small-caps;
 }
 
-header h1 {
-    font-size: 22px;
-    margin: 0;
-    font-weight: normal;
-}
-
-header h1 a {
-    text-decoration: none;
-    color: #990000;
-}
-
-/* Navigation */
-nav {
+#main {
     clear: both;
 }
 
-nav ul {
+#main .imghome {
+    margin: 0 85px;
+}
+
+#menu {
+    clear: both;
     list-style-type: none;
     color: #990000;
     margin: 0;
-    padding: 10px 0;
-    border-bottom: 1px solid #990000;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0;
+    padding: 0 auto;
+    background: url(/static/img/filetto.jpg) repeat-x bottom left;
+    display: block;
     height: 43px;
+    width: 560px;
+    padding-left: 200px;
 }
 
-nav ul li {
+#menu li {
+    float: left;
+    width: 80px;
     text-align: center;
     padding: 0 5px;
     list-style: none;
@@ -68,98 +60,66 @@ nav ul li {
     border-bottom: 4px solid transparent;
 }
 
-nav ul li:hover {
+#menu li.selected {
     border-bottom: 4px solid #990000;
 }
 
-nav ul li a {
+#menu li:hover {
+    border-bottom: 4px solid #990000;
+}
+
+#menu a {
     font-family: Helvetica, sans-serif, Arial;
     font-size: 13px;
     color: #990000;
+    margin: 0;
     text-decoration: none;
     font-variant: small-caps;
 }
 
-/* Main content */
-main {
+#footer {
     clear: both;
-    min-height: 400px;
+    background: url(/static/img/filetto.jpg) repeat-x bottom left;
+    width: 760px;
+    height: 3px;
 }
 
-.homepage {
-    text-align: center;
-    padding: 20px 0;
-}
-
-.imghome {
-    margin: 0 85px;
-    max-width: 100%;
-    height: auto;
-}
-
-/* Opere grid */
-.opere-grid {
+/* Opere list */
+ul#elenco_opere {
     padding: 0;
     margin: 0;
     list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
 }
 
-.opera-card {
+ul#elenco_opere li {
+    float: left;
     margin: 5px 10px;
+    list-style: none;
 }
 
-.opera-card a {
+ul#elenco_opere li a {
     text-decoration: none;
-    color: #333;
 }
 
-.opera-card img {
-    width: 200px;
-    height: 150px;
-    object-fit: cover;
+ul#elenco_opere li a img {
     border: 0 none;
 }
 
-.opera-card h3 {
-    font-family: Helvetica, sans-serif, Arial;
-    font-size: 13px;
-    font-variant: small-caps;
-    color: #990000;
-    margin: 5px 0 0;
-    font-weight: normal;
-}
-
-.opera-card .year {
-    font-size: 12px;
-    color: #666;
-}
-
-/* Opera detail */
-.opera-detail {
+/* Item (detail pages) */
+.item {
     clear: both;
     width: 600px;
     padding: 20px 2px 2px 2px;
 }
 
-.opera-detail h2 {
-    font-family: Helvetica, sans-serif, Arial;
-    font-size: 18px;
-    color: #990000;
-    font-variant: small-caps;
-    margin: 0 0 10px;
-    line-height: 1;
+.item img {
+    margin-right: 30px;
+    width: 200px;
+    height: 150px;
+    border: 0;
 }
 
-.opera-image {
-    max-width: 100%;
-    height: auto;
-    margin: 0 0 20px;
-}
-
-.opera-info p {
+.item p {
     font-family: Helvetica, sans-serif, Arial;
     font-size: 13px;
     font-variant: small-caps;
@@ -167,71 +127,64 @@ main {
     color: #000;
 }
 
-/* Mostre */
-.mostre-list {
+.item h3 {
+    font-family: Helvetica, sans-serif, Arial;
+    font-size: 18px;
+    color: #990000;
+    height: 10px;
+    padding: 0;
+    font-variant: small-caps;
+    margin: 0;
+    line-height: 1;
+}
+
+/* Biografia */
+#biografia {
+    font-family: Helvetica, sans-serif, Arial;
+    font-size: 14px;
+    line-height: 16px;
+    text-align: justify;
+}
+
+ul#list {
     padding: 0 0 20px 0;
     margin: 0;
 }
 
-.mostra-card {
+ul#list ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul#list li {
     margin-bottom: 7px;
     font-family: Helvetica, sans-serif, Arial;
     font-size: 14px;
     line-height: 16px;
     text-align: justify;
     list-style-type: none;
-    padding: 5px 0;
 }
 
-.mostra-card a {
-    text-decoration: none;
-    color: #333;
+ul#list ul li p {
+    margin: 3px;
 }
 
-.mostra-card h3 {
+.titolo_mostra {
     font-variant: small-caps;
     font-size: 16px;
     color: #990000;
-    margin: 0;
+}
+
+span.titolomostra {
     font-weight: bold;
 }
 
-.mostra-card .date,
-.mostra-card .type {
-    font-size: 12px;
-    color: #666;
-    margin-right: 10px;
-}
-
-/* Mostra detail */
-.mostra-detail h2 {
-    font-variant: small-caps;
-    color: #990000;
-}
-
-/* Biografia */
-.biografia {
-    font-family: Helvetica, sans-serif, Arial;
-    font-size: 14px;
-    line-height: 16px;
-    text-align: justify;
-}
-
 /* Contatti */
-.contatti label {
+#form_contatti p label {
+    display: block;
+}
+
+#contatti label {
     width: 215px;
     display: inline-block;
-}
-
-/* Footer */
-footer {
-    clear: both;
-    border-top: 1px solid #990000;
-    width: 760px;
-    height: auto;
-    padding: 10px 0;
-    margin-top: 40px;
-    text-align: center;
-    font-size: 12px;
-    color: #666;
 }

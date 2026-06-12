@@ -1,10 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}Biografia - Luisa Valentini{% endblock %}
+{% block title %}Biografia{% endblock %}
+{% block page_title %}Biografia{% endblock %}
 
 {% block content %}
-<div class="biografia">
-    <h2>Biografia</h2>
-    <p>Contenuto della biografia.</p>
+<div id="biografia">
+    <h2>Elenco mostre:</h2>
+    <ul id="list">
+        <li>
+            <h3>Personali</h3>
+            <ul>
+                {% regroup mostre_personali by beginning.year as year_list %}
+                {% for year in year_list %}
+                <li>
+                    <h2>{{ year.grouper }}</h2>
+                    <ul>
+                        {% for mostra in year.list %}
+                        <li>{{ mostra.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li>
+            <h3>Collettive</h3>
+            <ul>
+                {% regroup mostre_collettive by beginning.year as year_list %}
+                {% for year in year_list %}
+                <li>
+                    <h2>{{ year.grouper }}</h2>
+                    <ul>
+                        {% for mostra in year.list %}
+                        <li>{{ mostra.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
+    <p>Luisa Valentini vive e lavora a Torino. Laurea in Germanistica con Claudio Magris, Universit&agrave; degli Studi di Torino, e in Scultura con Nino Cassani all'Accademia Albertina. Attualmente &egrave; Titolare sulla Cattedra di Plastica Ornamentale presso l'Accademia Albertina di Belle Arti di Torino.</p>
 </div>
 {% endblock %}

@@ -1,22 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}{{ typology }} - Luisa Valentini{% endblock %}
+{% block title %}{{ typology }}{% endblock %}
+{% block page_title %}{{ typology }}{% endblock %}
 
 {% block content %}
-<h2>{{ typology }}</h2>
-<div class="opere-grid">
+<ul id="elenco_opere">
     {% for opera in opere %}
-    <div class="opera-card">
-        <a href="{{ opera.get_absolute_url }}">
+    <li>
+        <a href="{{ opera.image.url }}">
             {% if opera.thumb %}
             <img src="{{ opera.thumb.url }}" alt="{{ opera.title }}">
             {% endif %}
-            <h3>{{ opera.title }}</h3>
-            <span class="year">{{ opera.creation_year }}</span>
         </a>
-    </div>
+    </li>
     {% empty %}
-    <p>Nessuna opera disponibile.</p>
+    <li>Nessuna opera disponibile.</li>
     {% endfor %}
-</div>
+</ul>
 {% endblock %}

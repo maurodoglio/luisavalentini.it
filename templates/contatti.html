@@ -1,10 +1,28 @@
 {% extends "base.html" %}
 
-{% block title %}Contatti - Luisa Valentini{% endblock %}
+{% block title %}Contatti{% endblock %}
+{% block page_title %}Contatti{% endblock %}
 
 {% block content %}
-<div class="contatti">
-    <h2>Contatti</h2>
-    <p>Per informazioni, scrivere a: info@luisavalentini.it</p>
+<div id="contatti">
+    <p>Usate il form sottostante per inviare un messaggio a Luisa Valentini. Verrete ricontattati all'indirizzo email indicato.</p>
+    <form method="post" id="form_contatti">
+        {% csrf_token %}
+        <p>
+            <label>Indirizzo email</label>
+            <input type="email" name="email" required>
+        </p>
+        <p>
+            <label>Oggetto</label>
+            <input type="text" name="subject" required>
+        </p>
+        <p>
+            <label>Messaggio</label>
+            <textarea name="message" rows="8" required></textarea>
+        </p>
+        <p>
+            <button type="submit">Invia</button>
+        </p>
+    </form>
 </div>
 {% endblock %}
