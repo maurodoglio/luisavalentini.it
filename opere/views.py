@@ -5,13 +5,13 @@ from .models import Mostra, Opera
 
 def opere_base_view(request):
     """List all published sculptures."""
-    opere = Opera.objects.filter(typology='S', published=True).order_by('title')
+    opere = Opera.objects.filter(typology='S', published=True).order_by('pk')
     return render(request, 'opere/opere_base.html', {'opere': opere, 'typology': 'Opere'})
 
 
 def gioielli_base_view(request):
     """List all published jewelry."""
-    opere = Opera.objects.filter(typology='G', published=True).order_by('title')
+    opere = Opera.objects.filter(typology='G', published=True).order_by('pk')
     return render(request, 'opere/opere_base.html', {'opere': opere, 'typology': 'Gioielli'})
 
 
