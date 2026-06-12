@@ -1,7 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{{ typology }}{% endblock %}
 {% block page_title %}{{ typology }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/lightbox.css' %}">
+{% endblock %}
 
 {% block content %}
 <ul id="elenco_opere">
@@ -17,4 +22,5 @@
     <li>Nessuna opera disponibile.</li>
     {% endfor %}
 </ul>
+<script src="{% static 'js/lightbox.js' %}"></script>
 {% endblock %}
