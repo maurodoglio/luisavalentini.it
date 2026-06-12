@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from .models import Mostra, Opera
 
@@ -10,12 +11,11 @@ class MostraAdmin(admin.ModelAdmin):
     list_display = ('beginning', 'name', 'mostra_description', 'type')
     search_fields = ['name', 'content']
     list_filter = ('published', 'type')
-    date_hierarchy = 'beginning'
     ordering = ('-beginning', 'name', 'type')
 
     @admin.display(description='Descrizione')
     def mostra_description(self, obj):
-        return format_html(obj.content)
+        return mark_safe(obj.content)
 
 
 @admin.register(Opera)
@@ -33,4 +33,4 @@ class OperaAdmin(admin.ModelAdmin):
 
     @admin.display(description='Descrizione')
     def opera_description(self, obj):
-        return format_html(obj.content)
+        return mark_safe(obj.content)
