@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ opera.title }} - Luisa Valentini{% endblock %}
+
+{% block content %}
+<article class="opera-detail">
+    <h2>{{ opera.title }}</h2>
+    {% if opera.image %}
+    <img src="{{ opera.image.url }}" alt="{{ opera.title }}" class="opera-image">
+    {% endif %}
+    <div class="opera-info">
+        <p class="year">Anno: {{ opera.creation_year }}</p>
+        <div class="description">{{ opera.content|safe }}</div>
+    </div>
+</article>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Mostre - Luisa Valentini{% endblock %}
+
+{% block content %}
+<h2>Mostre</h2>
+<div class="mostre-list">
+    {% for mostra in mostre %}
+    <div class="mostra-card">
+        <a href="{{ mostra.get_absolute_url }}">
+            <h3>{{ mostra.name }}</h3>
+            <span class="date">{{ mostra.beginning|date:"d/m/Y" }}</span>
+            <span class="type">{{ mostra.get_type_display }}</span>
+        </a>
+    </div>
+    {% empty %}
+    <p>Nessuna mostra disponibile.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+/* Luisa Valentini - Portfolio */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    color: #333;
+    background: #fafafa;
+    line-height: 1.6;
+}
+
+#container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 40px 0 20px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 40px;
+}
+
+header h1 a {
+    text-decoration: none;
+    color: #333;
+    font-size: 2.5em;
+    font-weight: normal;
+    letter-spacing: 2px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #333;
+}
+
+main {
+    min-height: 60vh;
+}
+
+.homepage {
+    text-align: center;
+}
+
+.imghome {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Opere grid */
+.opere-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.opera-card {
+    text-align: center;
+}
+
+.opera-card a {
+    text-decoration: none;
+    color: #333;
+}
+
+.opera-card img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+.opera-card h3 {
+    margin-top: 10px;
+    font-size: 1em;
+    font-weight: normal;
+}
+
+.opera-card .year {
+    font-size: 0.85em;
+    color: #999;
+}
+
+/* Opera detail */
+.opera-detail {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.opera-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+}
+
+/* Mostre */
+.mostre-list {
+    margin-top: 20px;
+}
+
+.mostra-card {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.mostra-card a {
+    text-decoration: none;
+    color: #333;
+}
+
+.mostra-card h3 {
+    font-weight: normal;
+}
+
+.mostra-card .date,
+.mostra-card .type {
+    font-size: 0.85em;
+    color: #999;
+    margin-right: 15px;
+}
+
+footer {
+    margin-top: 60px;
+    padding: 20px 0;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    font-size: 0.85em;
+    color: #999;
+}
+
+h2 {
+    font-weight: normal;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
