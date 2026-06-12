@@ -12,7 +12,7 @@
 <ul id="elenco_opere">
     {% for opera in opere %}
     <li>
-        <a href="{{ opera.image.url }}" title="{{ opera.title }} {{ opera.content }}">
+        <a href="{{ opera.image.url }}" data-caption="{{ opera.content }}" title="{{ opera.title }}">
             {% if opera.thumb %}
             <img width="100" height="65" src="{{ opera.thumb.url }}" alt="{{ opera.title }}">
             {% endif %}

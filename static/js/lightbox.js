@@ -27,11 +27,11 @@
     });
   }
 
-  function open(src, title) {
+  function open(src, title, desc) {
     if (!overlay) createOverlay();
     img.src = src;
     img.alt = title;
-    caption.textContent = title;
+    caption.innerHTML = '<strong>' + title + '</strong>' + (desc ? ' ' + desc : '');
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
@@ -49,7 +49,8 @@
         e.preventDefault();
         var href = this.getAttribute('href');
         var title = this.getAttribute('title') || '';
-        open(href, title);
+        var desc = this.getAttribute('data-caption') || '';
+        open(href, title, desc);
       });
     }
   });
