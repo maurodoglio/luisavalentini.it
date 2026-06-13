@@ -119,7 +119,8 @@ CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', 'mauro.doglio@gmail.com')
 # Security settings for production
 if not DEBUG:
     SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() in ('true', '1')
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    _ssl_enabled = os.environ.get('SSL_ENABLED', 'True').lower() in ('true', '1')
+    SESSION_COOKIE_SECURE = _ssl_enabled
+    CSRF_COOKIE_SECURE = _ssl_enabled
+    SECURE_HSTS_SECONDS = 31536000 if _ssl_enabled else 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = _ssl_enabled
