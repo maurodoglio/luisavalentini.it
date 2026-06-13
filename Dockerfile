@@ -13,12 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
+# Copy project (including media/ if present in build context)
 COPY . .
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
+# Create data directory for SQLite (will be mounted as persistent volume)
+RUN mkdir -p /data
+
 EXPOSE 8000
 
-CMD ["gunicorn", "luisavalentini.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]
+# Run migrations on startup, then start gunicorn
+RUN chmod +x start.sh
+CMD ["./start.sh"]

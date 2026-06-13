@@ -60,7 +60,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'luisavalentini.wsgi.application'
 
-# Database - use /data volume on Fly.io, local otherwise
+# Database - use /data volume on DigitalOcean, local otherwise
 DATA_DIR = Path(os.environ.get('DATA_DIR', BASE_DIR))
 DATABASES = {
     'default': {
