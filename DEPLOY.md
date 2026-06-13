@@ -1,117 +1,120 @@
 # Deployment Plan
 
 ## Overview
-Deploy the Django site to **DigitalOcean App Platform** ($5/mo = $60/year) with:
-- SQLite database on a persistent volume (no managed DB needed)
-- GitHub auto-deploy (built-in, no Actions needed for deploy itself)
+Deploy the Django site to a **DigitalOcean Droplet** ($6/mo = $72/year) with:
+- SQLite database (persistent on disk)
+- GitHub Actions auto-deploy via SSH on push to `master`
+- nginx reverse proxy
+- Let's Encrypt SSL certificate (auto-renewed via certbot)
 - Custom domain (luisavalentini.it)
-- Free Let's Encrypt SSL certificate (automatic via DO)
 
 ## Architecture
 ```
-GitHub repo → DigitalOcean App Platform (auto-deploy on push to master)
-                  ├── Django app (gunicorn, Docker container)
-                  ├── SQLite on persistent volume (/data)
-                  ├── Media files on persistent volume (/data/media)
-                  └── Static files (WhiteNoise, served from container)
+GitHub repo → GitHub Actions (test + SSH deploy)
+                        ↓
+DigitalOcean Droplet (Ubuntu 24.04, $6/mo)
+    ├── nginx (reverse proxy + static/media serving + SSL)
+    ├── gunicorn (Django app via systemd)
+    ├── SQLite database (/opt/luisavalentini/data/db.sqlite3)
+    └── Media files (/opt/luisavalentini/data/media/)
 ```
 
-## Cost Breakdown
-- App Platform Basic ($5/mo) — 1 container, 512MB RAM
-- Persistent volume (free, included up to 1GB on Basic)
-- **Total: $60/year**
+## Cost
+- Droplet: $6/mo (1 vCPU, 1GB RAM, 25GB SSD) — more than enough
+- **Total: $72/year**
 
 ## Steps
 
-### 1. Prepare the app for production ✅
-- [x] Add `gunicorn` to requirements
-- [x] Add `whitenoise` for static files
-- [x] Create `Dockerfile` with startup script (auto-migrates on deploy)
-- [x] Update settings.py for production (env-based config)
-- [x] Create `.github/workflows/deploy.yml` (CI/test on PRs)
+### 1. Create the Droplet
+1. Log in to https://cloud.digitalocean.com
+2. Create Droplet:
+   - **Image**: Ubuntu 24.04 LTS
+   - **Plan**: Basic, Regular, $6/mo (1 vCPU / 1GB / 25GB)
+   - **Region**: Amsterdam (AMS3) or closest to users
+   - **Authentication**: SSH key (add your public key)
+3. Note the Droplet's IP address
 
-### 2. Deploy to DigitalOcean App Platform
-1. Sign up at https://cloud.digitalocean.com
-2. Create New App → Connect GitHub → Select this repo
-3. Select "Dockerfile" as build method
-4. Add a **persistent volume**:
-   - Mount path: `/data`
-   - Size: 1GB (plenty for SQLite + media)
-5. Configure environment variables:
-   - `SECRET_KEY` = (generate: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`)
-   - `DEBUG` = False
-   - `ALLOWED_HOSTS` = luisavalentini.it,www.luisavalentini.it,.ondigitalocean.app
-   - `CSRF_TRUSTED_ORIGINS` = https://luisavalentini.it,https://www.luisavalentini.it
-   - `DATA_DIR` = /data
-   - `MEDIA_ROOT` = /data/media
-   - `CONTACT_EMAIL` = mauro.doglio@gmail.com
-   - `EMAIL_BACKEND` = django.core.mail.backends.smtp.EmailBackend
-   - `EMAIL_HOST` = smtp.gmail.com
-   - `EMAIL_PORT` = 587
-   - `EMAIL_USE_TLS` = True
-   - `EMAIL_HOST_USER` = (your gmail)
-   - `EMAIL_HOST_PASSWORD` = (gmail app password)
-6. Choose **Basic** plan ($5/mo)
-7. Deploy
-
-### 3. Post-deploy setup (one-time)
-Run these via DO Console (App → Console tab):
+### 2. Run server setup script
+From your local machine:
 ```bash
-# Create admin user
-python manage.py createsuperuser
+ssh root@YOUR_DROPLET_IP < server_setup.sh
+```
+This installs nginx, Python, creates the `deploy` user, systemd service, and firewall rules.
 
-# Import legacy data
-python manage.py import_legacy_data
-
-# Copy media files (upload via scp or DO Console)
-# Media goes to /data/media/
+### 3. Generate and set SECRET_KEY
+```bash
+ssh root@YOUR_DROPLET_IP
+# Edit the systemd service file:
+nano /etc/systemd/system/luisavalentini.service
+# Replace CHANGE_ME with a real key (generate with):
+python3 -c "import secrets; print(secrets.token_urlsafe(50))"
+# Then reload:
+systemctl daemon-reload
 ```
 
-### 4. Upload media files
-After first deploy, upload media via the DO Console tab:
-
+### 4. Clone the repo on the server
 ```bash
-# On your LOCAL machine, create a tarball:
-cd /path/to/project
-tar czf media.tar.gz media/
-
-# Then in the DO Console (App → Console tab):
-# Use wget/curl to download from a temporary location, OR
-# use doctl (DigitalOcean CLI) to copy files:
-doctl apps exec <app-id> -- tar xzf - -C /data < media.tar.gz
+ssh deploy@YOUR_DROPLET_IP
+git clone https://github.com/maurodoglio/luisavalentini.it.git /opt/luisavalentini/app
+cd /opt/luisavalentini/app
+bash deploy.sh
 ```
 
-**Simplest approach** — use `doctl` CLI from your local machine:
+### 5. Import data and create admin
 ```bash
-# Install doctl: https://docs.digitalocean.com/reference/doctl/how-to/install/
-doctl auth init
-
-# Copy media folder to the running container's persistent volume:
-tar czf - media/ | doctl apps exec <app-id> -- tar xzf - -C /data/
+ssh deploy@YOUR_DROPLET_IP
+cd /opt/luisavalentini/app
+/opt/luisavalentini/venv/bin/python manage.py import_legacy_data
+/opt/luisavalentini/venv/bin/python manage.py createsuperuser
 ```
 
-This puts your files at `/data/media/opere/`, `/data/media/opere_thumb/`, etc.
-You only need to do this once — the volume persists across deploys.
+### 6. Upload media files
+From your local machine (where the `media/` folder exists):
+```bash
+scp -r media/* deploy@YOUR_DROPLET_IP:/opt/luisavalentini/data/media/
+```
 
-### 5. Configure custom domain
-1. In DO App settings → Domains → Add Domain
-2. Add `luisavalentini.it` and `www.luisavalentini.it`
-3. Update DNS records at your registrar:
-   - `A` record for `@` → DigitalOcean's provided IP
-   - `CNAME` for `www` → `<app-name>.ondigitalocean.app`
-4. DO automatically provisions Let's Encrypt SSL certificate (~5-10 min)
+### 7. Configure GitHub Actions secrets
+In your repo → Settings → Secrets and variables → Actions:
+- `SERVER_IP` = your Droplet's IP address
+- `SSH_PRIVATE_KEY` = a deploy SSH private key (generate a dedicated one)
 
-### 6. GitHub integration (automatic)
-- DigitalOcean watches your GitHub repo
-- Any push to `master` triggers automatic redeploy
-- Migrations run automatically on startup (via start.sh)
-- No GitHub Actions needed for deployment
+Generate deploy key:
+```bash
+ssh-keygen -t ed25519 -f deploy_key -N ""
+# Add deploy_key.pub to the server:
+ssh root@YOUR_DROPLET_IP "cat >> /home/deploy/.ssh/authorized_keys" < deploy_key.pub
+# Add deploy_key (private) as GitHub secret SSH_PRIVATE_KEY
+```
 
-## Domain Migration Checklist
-1. Deploy and verify new site works on `<app-name>.ondigitalocean.app`
-2. Lower DNS TTL on current domain (set to 300s, wait 24h for propagation)
-3. Add custom domain in DigitalOcean dashboard
-4. Update DNS A/CNAME records to point to DigitalOcean
-5. SSL certificate auto-provisions (usually < 10 minutes)
-6. Verify site works on https://luisavalentini.it
-7. Shut down old hosting
+### 8. Allow deploy user to restart the service
+```bash
+ssh root@YOUR_DROPLET_IP
+echo "deploy ALL=(ALL) NOPASSWD: /bin/systemctl restart luisavalentini" >> /etc/sudoers.d/deploy
+chmod 440 /etc/sudoers.d/deploy
+```
+
+### 9. Configure DNS and SSL
+1. Point DNS at your registrar:
+   - `A` record for `@` → Droplet IP
+   - `A` record for `www` → Droplet IP (or CNAME to @)
+2. Wait for propagation (check with `dig luisavalentini.it`)
+3. Install SSL:
+```bash
+ssh root@YOUR_DROPLET_IP
+certbot --nginx -d luisavalentini.it -d www.luisavalentini.it
+```
+Certbot auto-renews via a systemd timer (already set up on Ubuntu).
+
+## How deploys work after setup
+1. You push to `master`
+2. GitHub Actions runs tests
+3. If tests pass, SSHs into the server and runs `git pull` + `deploy.sh`
+4. `deploy.sh` installs deps, runs migrations, collects static, restarts gunicorn
+5. Site is live within ~10 seconds
+
+## Maintenance
+- **SSL renewal**: Automatic (certbot timer)
+- **OS updates**: `ssh root@IP "apt update && apt upgrade -y"` monthly
+- **Backups**: Download SQLite: `scp deploy@IP:/opt/luisavalentini/data/db.sqlite3 ./`
+- **Logs**: `ssh deploy@IP "journalctl -u luisavalentini --since today"`

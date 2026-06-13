@@ -1,9 +1,7 @@
-name: CI
+name: Deploy
 
 on:
   push:
-    branches: [master]
-  pull_request:
     branches: [master]
 
 jobs:
@@ -35,3 +33,19 @@ jobs:
         run: python manage.py collectstatic --noinput
         env:
           SECRET_KEY: test-secret-key
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/luisavalentini/app
+            git pull origin master
+            bash deploy.sh
