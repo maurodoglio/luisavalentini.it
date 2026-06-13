@@ -1,3 +1,5 @@
+import time
+
 from django.shortcuts import get_object_or_404, render
 from django.conf import settings
 from django.core.mail import send_mail
@@ -57,8 +59,23 @@ def biografia_view(request):
 
 def contatti_view(request):
     """Contact page with a simple form that sends an email."""
-    context = {}
+    context = {'form_timestamp': str(int(time.time()))}
     if request.method == 'POST':
+        # Honeypot check: if the hidden field is filled, it's a bot
+        if request.POST.get('website', ''):
+            context['success'] = True
+            return render(request, 'contatti.html', context)
+
+        # Time check: reject if submitted in under 3 seconds
+        form_timestamp = request.POST.get('form_timestamp', '0')
+        try:
+            elapsed = time.time() - int(form_timestamp)
+            if elapsed < 3:
+                context['success'] = True
+                return render(request, 'contatti.html', context)
+        except (ValueError, TypeError):
+            pass
+
         email = request.POST.get('email', '').strip()
         subject = request.POST.get('subject', '').strip()
         message = request.POST.get('message', '').strip()

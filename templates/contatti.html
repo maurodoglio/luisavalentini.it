@@ -14,6 +14,12 @@
     <p>Usate il form sottostante per inviare un messaggio a Luisa Valentini. Verrete ricontattati all'indirizzo email indicato.</p>
     <form method="post" id="form_contatti">
         {% csrf_token %}
+        <input type="hidden" name="form_timestamp" value="{{ form_timestamp }}">
+        <!-- Honeypot field - hidden from humans, bots will fill it -->
+        <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <label>Leave this empty</label>
+            <input type="text" name="website" tabindex="-1" autocomplete="off">
+        </div>
         <p>
             <label>Indirizzo email</label>
             <input type="email" name="email" required>
