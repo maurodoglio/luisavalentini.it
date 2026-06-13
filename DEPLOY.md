@@ -1,66 +1,79 @@
 # Deployment Plan
 
 ## Overview
-Deploy the Django site to **Fly.io** with:
-- GitHub Actions CI/CD pipeline
+Deploy the Django site to **DigitalOcean App Platform** with:
+- GitHub auto-deploy (built-in, no Actions needed for deploy itself)
 - Custom domain (luisavalentini.it)
-- Free Let's Encrypt SSL certificate (automatic via Fly.io)
+- Free Let's Encrypt SSL certificate (automatic via DO)
 
-## Why Fly.io
-- **Cost**: ~$3-5/month (shared CPU VM + 1GB volume for SQLite/media)
-- **Dev-friendly**: Deploy with `fly deploy` or GitHub Actions
+## Why DigitalOcean App Platform
+- **Reputable**: Established cloud provider since 2011, publicly traded (NYSE: DOCN)
+- **Cost**: ~$5/month (Basic plan, 1 container)
+- **Dev-friendly**: Native GitHub integration, auto-deploy on push
 - **Built-in SSL**: Automatic Let's Encrypt certificate provisioning
-- **Custom domains**: Simple DNS configuration
-- **Docker-based**: Predictable, reproducible deployments
+- **Custom domains**: Simple configuration in dashboard
+- **Docker-based**: Uses our Dockerfile directly
 
 ## Architecture
 ```
-GitHub repo → GitHub Actions → Fly.io (Docker container)
-                                  ├── Django app (gunicorn)
-                                  ├── SQLite database (on persistent volume)
-                                  ├── Media files (on persistent volume)
-                                  └── Static files (whitenoise)
+GitHub repo → DigitalOcean App Platform (auto-deploy on push)
+                  ├── Django app (gunicorn, Docker container)
+                  ├── Managed Database or SQLite on volume
+                  ├── Media files (DO Spaces / volume)
+                  └── Static files (whitenoise, served from container)
 ```
 
 ## Steps
 
-### 1. Prepare the app for production
+### 1. Prepare the app for production ✅
 - [x] Add `gunicorn` to requirements
 - [x] Add `whitenoise` for static files
 - [x] Create `Dockerfile`
-- [x] Create `fly.toml` configuration
 - [x] Update settings.py for production (env-based config)
-- [x] Create `.github/workflows/deploy.yml`
+- [x] Create `.github/workflows/deploy.yml` (optional CI/test)
 
-### 2. Deploy to Fly.io (manual first time)
-- [ ] Install Fly CLI: `curl -L https://fly.io/install.sh | sh`
-- [ ] Sign up: `fly auth signup`
-- [ ] Create app: `fly launch` (from repo root)
-- [ ] Create volume: `fly volumes create data --size 1`
-- [ ] Set secrets: `fly secrets set SECRET_KEY=<random> DJANGO_SETTINGS_MODULE=luisavalentini.settings`
-- [ ] First deploy: `fly deploy`
-- [ ] Run migrations: `fly ssh console -C "python manage.py migrate"`
-- [ ] Create superuser: `fly ssh console -C "python manage.py createsuperuser"`
-- [ ] Upload media files: `fly ssh sftp shell` then put files
+### 2. Deploy to DigitalOcean App Platform
+- [ ] Sign up at https://cloud.digitalocean.com
+- [ ] Create New App → choose GitHub repo
+- [ ] Select "Dockerfile" as build method
+- [ ] Configure environment variables:
+  - `SECRET_KEY` = (generate random key)
+  - `DEBUG` = False
+  - `ALLOWED_HOSTS` = luisavalentini.it,www.luisavalentini.it,.ondigitalocean.app
+  - `CSRF_TRUSTED_ORIGINS` = https://luisavalentini.it,https://www.luisavalentini.it
+  - `DATA_DIR` = /data
+  - `MEDIA_ROOT` = /data/media
+  - `CONTACT_EMAIL` = mauro.doglio@gmail.com
+- [ ] Choose Basic plan ($5/mo)
+- [ ] Deploy
+- [ ] Run one-time console command: `python manage.py migrate`
+- [ ] Run: `python manage.py createsuperuser`
+- [ ] Upload media files via console or DO Spaces
 
 ### 3. Configure custom domain
-- [ ] Add domain: `fly certs add luisavalentini.it`
-- [ ] Add domain: `fly certs add www.luisavalentini.it`
+- [ ] In DO App settings → Domains → Add Domain
+- [ ] Add `luisavalentini.it` and `www.luisavalentini.it`
 - [ ] Update DNS records at registrar:
-  - `A` record → Fly.io IPv4 (shown by `fly ips list`)
-  - `AAAA` record → Fly.io IPv6
-  - `CNAME` for www → `luisavalentini.it`
-- [ ] Fly.io automatically provisions Let's Encrypt SSL
+  - `A` record for `@` → DigitalOcean's provided IP
+  - `CNAME` for `www` → `<app-name>.ondigitalocean.app`
+- [ ] DO automatically provisions Let's Encrypt SSL certificate
 
-### 4. Set up GitHub Actions
-- [ ] Add `FLY_API_TOKEN` secret to GitHub repo settings
-- [ ] Push to main/master triggers deploy automatically
+### 4. GitHub integration (automatic)
+- DigitalOcean App Platform watches your GitHub repo
+- Any push to `master` triggers automatic redeploy
+- No GitHub Actions needed for deployment (but kept for CI/tests)
 
 ## Domain Migration Checklist
-1. Deploy and verify new site works on Fly.io URL (e.g., `luisavalentini.fly.dev`)
-2. Lower DNS TTL on current domain (set to 300s, wait 24h)
-3. Add custom domain to Fly.io app
-4. Update DNS A/AAAA records to point to Fly.io IPs
-5. SSL certificate auto-provisions (usually < 5 minutes)
-6. Verify site works on luisavalentini.it
+1. Deploy and verify new site works on `<app-name>.ondigitalocean.app`
+2. Lower DNS TTL on current domain (set to 300s, wait 24h for propagation)
+3. Add custom domain in DigitalOcean dashboard
+4. Update DNS A/CNAME records to point to DigitalOcean
+5. SSL certificate auto-provisions (usually < 10 minutes)
+6. Verify site works on https://luisavalentini.it
 7. Shut down old hosting
+
+## Alternative: GitHub Actions CI
+The `.github/workflows/deploy.yml` can be used for running tests before
+DigitalOcean's auto-deploy picks up the changes. DO deploys from the branch
+directly — no API token needed for deployment.
+
