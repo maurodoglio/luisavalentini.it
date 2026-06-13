@@ -5,6 +5,12 @@
 
 {% block content %}
 <div id="contatti">
+    {% if success %}
+    <p class="msg-success">Il messaggio è stato inviato con successo. Verrete ricontattati al più presto.</p>
+    {% else %}
+    {% if error %}
+    <p class="msg-error">{{ error }}</p>
+    {% endif %}
     <p>Usate il form sottostante per inviare un messaggio a Luisa Valentini. Verrete ricontattati all'indirizzo email indicato.</p>
     <form method="post" id="form_contatti">
         {% csrf_token %}
@@ -24,5 +30,6 @@
             <button type="submit">Invia</button>
         </p>
     </form>
+    {% endif %}
 </div>
 {% endblock %}
