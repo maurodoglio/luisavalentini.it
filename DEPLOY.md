@@ -68,16 +68,30 @@ python manage.py import_legacy_data
 ```
 
 ### 4. Upload media files
-Option A — via DO Console:
+After first deploy, upload media via the DO Console tab:
+
 ```bash
-# From your local machine, tar the media folder and upload
+# On your LOCAL machine, create a tarball:
+cd /path/to/project
 tar czf media.tar.gz media/
-# Then in DO Console, download and extract to /data/media/
+
+# Then in the DO Console (App → Console tab):
+# Use wget/curl to download from a temporary location, OR
+# use doctl (DigitalOcean CLI) to copy files:
+doctl apps exec <app-id> -- tar xzf - -C /data < media.tar.gz
 ```
 
-Option B — add media to git (simplest for this small site):
-- The `media/` folder is ~15MB total (thumbnails + images)
-- Add to repo, and in Dockerfile copy to /data/media on first run
+**Simplest approach** — use `doctl` CLI from your local machine:
+```bash
+# Install doctl: https://docs.digitalocean.com/reference/doctl/how-to/install/
+doctl auth init
+
+# Copy media folder to the running container's persistent volume:
+tar czf - media/ | doctl apps exec <app-id> -- tar xzf - -C /data/
+```
+
+This puts your files at `/data/media/opere/`, `/data/media/opere_thumb/`, etc.
+You only need to do this once — the volume persists across deploys.
 
 ### 5. Configure custom domain
 1. In DO App settings → Domains → Add Domain
