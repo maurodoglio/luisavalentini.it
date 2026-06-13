@@ -44,6 +44,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: deploy
+          port: 2222
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/luisavalentini/app
