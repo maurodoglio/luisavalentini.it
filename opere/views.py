@@ -7,13 +7,13 @@ from .models import Mostra, Opera
 
 def opere_base_view(request):
     """List all published sculptures."""
-    opere = Opera.objects.filter(typology='S', published=True).order_by('pk')
+    opere = Opera.objects.filter(typology='S', published=True).order_by('display_order')
     return render(request, 'opere/opere_base.html', {'opere': opere, 'typology': 'Opere'})
 
 
 def gioielli_base_view(request):
     """List all published jewelry."""
-    opere = Opera.objects.filter(typology='G', published=True).order_by('pk')
+    opere = Opera.objects.filter(typology='G', published=True).order_by('display_order')
     return render(request, 'opere/opere_base.html', {'opere': opere, 'typology': 'Gioielli'})
 
 
@@ -45,10 +45,10 @@ def biografia_view(request):
     """Biography page with exhibitions grouped by type and year."""
     mostre_personali = Mostra.objects.filter(
         published=True, type='1'
-    ).order_by('-beginning')
+    ).order_by('-beginning', 'display_order')
     mostre_collettive = Mostra.objects.filter(
         published=True, type='2'
-    ).order_by('-beginning')
+    ).order_by('-beginning', 'display_order')
     return render(request, 'biografia.html', {
         'mostre_personali': mostre_personali,
         'mostre_collettive': mostre_collettive,

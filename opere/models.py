@@ -15,11 +15,12 @@ class Mostra(models.Model):
     published = models.BooleanField(verbose_name='Pubblicato', default=False)
     type = models.CharField(max_length=1, choices=TYPES, verbose_name='Tipologia')
     beginning = models.DateField(verbose_name='Data di inizio')
+    display_order = models.IntegerField(verbose_name='Ordine', default=0)
 
     class Meta:
         verbose_name_plural = 'mostre'
         verbose_name = 'mostra'
-        ordering = ['-beginning']
+        ordering = ['display_order']
 
     def __str__(self):
         return self.name
@@ -47,10 +48,11 @@ class Opera(models.Model):
     thumb = models.ImageField(upload_to='opere_thumb', verbose_name='Miniatura')
     creation_year = models.CharField(max_length=4, verbose_name='Anno')
     typology = models.CharField(max_length=1, choices=OPERA_TYPE, default='S')
+    display_order = models.IntegerField(verbose_name='Ordine', default=0)
 
     class Meta:
         verbose_name_plural = 'Opere'
-        ordering = ['-creation_year', 'title']
+        ordering = ['display_order', 'pk']
 
     def __str__(self):
         return self.title
