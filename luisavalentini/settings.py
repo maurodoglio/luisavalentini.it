@@ -96,4 +96,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 DEFAULT_FROM_EMAIL = 'noreply@luisavalentini.it'
-CONTACT_EMAIL = 'info@luisavalentini.it'
+CONTACT_EMAIL = 'mauro.doglio@gmail.com'
