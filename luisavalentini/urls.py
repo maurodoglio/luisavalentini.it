@@ -8,6 +8,7 @@ from opere.views import biografia_view, contatti_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('tinymce/', include('tinymce.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('biografia/', biografia_view, name='biografia'),
     path('contatti/', contatti_view, name='contatti'),

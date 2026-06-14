@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from tinymce.widgets import TinyMCE
 
 from .models import Mostra, Opera
 
@@ -13,6 +14,11 @@ class MostraAdmin(admin.ModelAdmin):
     list_filter = ('published', 'type')
     ordering = ('-beginning', 'name', 'type')
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'content':
+            kwargs['widget'] = TinyMCE(attrs={'cols': 80, 'rows': 20})
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
     @admin.display(description='Descrizione')
     def mostra_description(self, obj):
         return mark_safe(obj.content)
@@ -24,6 +30,11 @@ class OperaAdmin(admin.ModelAdmin):
     list_display = ('opera_thumb', 'title', 'typology', 'opera_description', 'creation_year')
     search_fields = ['title', 'content']
     list_filter = ('typology', 'published', 'creation_year')
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'content':
+            kwargs['widget'] = TinyMCE(attrs={'cols': 80, 'rows': 20})
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     @admin.display(description='Immagine')
     def opera_thumb(self, obj):
